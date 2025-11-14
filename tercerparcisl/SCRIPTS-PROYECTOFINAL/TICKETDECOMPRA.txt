@@ -1,0 +1,98 @@
+-- =================================================================
+-- PLANTILLA DE DEMO: VENTA DE MÚLTIPLES PRODUCTOS Y SERVICIOS
+-- =================================================================
+USE db_tienda;
+START TRANSACTION;
+
+-- -----------------------------------------------------------------
+-- 1. CREAR EL CLIENTE (O SELECCIONAR UNO EXISTENTE)
+-- -----------------------------------------------------------------
+
+-- -- Opción A: Crear un cliente nuevo
+-- INSERT INTO Cliente (nombre, telefono, email) VALUES ('Juan Perez', '5512345678', 'juan.perez@email.com');
+-- SET @ID_CLIENTE_USADO = LAST_INSERT_ID();
+
+-- Opción B: Usar un cliente existente (ej. 'Cliente General' ID 1)
+SET @ID_CLIENTE_USADO = 1; -- MODIFICAR AQUÍ (el ID del cliente)
+
+
+-- -----------------------------------------------------------------
+-- 2. CREAR EL TICKET MAESTRO
+-- -----------------------------------------------------------------
+INSERT INTO Ticket (idCliente) VALUES (@ID_CLIENTE_USADO);
+SET @ID_TICKET_NUEVO = LAST_INSERT_ID();
+SELECT CONCAT('Se ha creado el Ticket N°: ', @ID_TICKET_NUEVO) AS Mensaje;
+
+
+-- -----------------------------------------------------------------
+-- 3. AÑADIR PRODUCTOS LOCALES (de db_tienda)
+-- (Copia y pega este bloque por cada producto diferente que vendas)
+-- -----------------------------------------------------------------
+
+-- Producto 1: (Ej. 2 Llantas R29)
+INSERT INTO TicketDetalleProducto (idTicket, idProducto, cantidad, precioUnitario)
+VALUES (
+    @ID_TICKET_NUEVO,
+    3,  -- MODIFICAR AQUÍ (ID del Producto de tu "Menú")
+    2,  -- MODIFICAR AQUÍ (Cuántas unidades)
+    (SELECT precioVenta FROM Producto WHERE idProducto = 3) -- El ID aquí debe ser el mismo de arriba
+);
+
+-- Producto 2: (Ej. 1 Casco)
+INSERT INTO TicketDetalleProducto (idTicket, idProducto, cantidad, precioUnitario)
+VALUES (
+    @ID_TICKET_NUEVO,
+    2,  -- MODIFICAR AQUÍ (ID del Producto de tu "Menú")
+    1,  -- MODIFICAR AQUÍ (Cuántas unidades)
+    (SELECT precioVenta FROM Producto WHERE idProducto = 2) -- El ID aquí debe ser el mismo de arriba
+);
+
+
+-- -----------------------------------------------------------------
+-- 4. AÑADIR SERVICIOS REMOTOS (de db_taller, la PC de tu amigo)
+-- (Copia y pega este bloque por cada servicio diferente)
+-- -----------------------------------------------------------------
+
+-- Servicio 1: (Ej. 1 Afinación Completa hecha por Ana Torres)
+INSERT INTO TicketDetalleServicio (idTicket, idServicioRemoto, idMecanicoRemoto, nombreServicio, costoManoDeObra)
+SELECT
+    @ID_TICKET_NUEVO,
+    1,   -- MODIFICAR AQUÍ (ID del Servicio de tu "Menú")
+    2,   -- MODIFICAR AQUÍ (ID del Mecánico de tu "Menú")
+    s.nombre,           -- El nombre se copia automático
+    s.costoManoDeObra   -- El costo se copia automático
+FROM
+    servicios_taller_remoto s  -- ¡Leyendo de la PC de tu amigo!
+WHERE
+    s.idServicio = 1; -- El ID aquí debe ser el mismo de arriba
+
+
+-- -----------------------------------------------------------------
+-- 5. CALCULAR TOTALES
+-- -----------------------------------------------------------------
+UPDATE Ticket SET
+    totalProductos = (SELECT SUM(precioUnitario * cantidad) FROM TicketDetalleProducto WHERE idTicket = @ID_TICKET_NUEVO),
+    totalServicios = (SELECT SUM(costoManoDeObra) FROM TicketDetalleServicio WHERE idTicket = @ID_TICKET_NUEVO)
+WHERE idTicket = @ID_TICKET_NUEVO;
+
+-- Actualiza el total final basado en los subtotales
+UPDATE Ticket SET
+    totalFinal = (totalProductos + totalServicios)
+WHERE idTicket = @ID_TICKET_NUEVO;
+
+
+-- -----------------------------------------------------------------
+-- 6. CONFIRMAR Y MOSTRAR RESULTADOS
+-- -----------------------------------------------------------------
+COMMIT; -- ¡Se guarda todo!
+
+SELECT '¡TICKET GUARDADO CON ÉXITO!' AS Resultado;
+
+-- Muestra el ticket final
+SELECT * FROM Ticket WHERE idTicket = @ID_TICKET_NUEVO;
+
+-- Muestra los productos vendidos
+SELECT * FROM TicketDetalleProducto WHERE idTicket = @ID_TICKET_NUEVO;
+
+-- Muestra los servicios realizados
+SELECT * FROM TicketDetalleServicio WHERE idTicket = @ID_TICKET_NUEVO;

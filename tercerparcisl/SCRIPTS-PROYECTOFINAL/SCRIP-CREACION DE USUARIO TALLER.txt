@@ -1,0 +1,6 @@
+-- Cambia 'IP_TUYA' por tu IP real y 'pass_tuya' por una contraseña
+CREATE USER 'usuario_tienda'@'IP_TUYA' IDENTIFIED BY 'pass_tuya';
+-- Otorga permiso de SÓLO LECTURA al catálogo de servicios y mecánicos
+GRANT SELECT ON db_taller.Servicio TO 'usuario_tienda'@'IP_TUYA';
+GRANT SELECT ON db_taller.Mecanico TO 'usuario_tienda'@'IP_TUYA';
+FLUSH PRIVILEGES;

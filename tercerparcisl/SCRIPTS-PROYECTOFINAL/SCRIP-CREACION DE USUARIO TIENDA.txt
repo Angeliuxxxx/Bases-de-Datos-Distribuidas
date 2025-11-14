@@ -1,0 +1,4 @@
+-- Cambia 'IP_AMIGO' por su IP real y 'pass_amigo' por una contraseña
+CREATE USER 'usuario_taller'@'IP_AMIGO' IDENTIFIED BY 'pass_amigo';
+GRANT SELECT ON db_tienda.* TO 'usuario_taller'@'IP_AMIGO';
+FLUSH PRIVILEGES;

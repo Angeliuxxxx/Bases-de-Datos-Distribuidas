@@ -1,0 +1,21 @@
+USE db_tienda;
+
+-- 1. CREA EL ENLACE AL CATÁLOGO DE SERVICIOS DE TU AMIGO
+-- Reemplaza 'usuario_tienda', 'pass_tuya' y 'IP_AMIGO' con los datos REALES
+CREATE TABLE servicios_taller_remoto (
+    idServicio INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    costoManoDeObra DECIMAL(10, 2) NOT NULL
+)
+ENGINE=FEDERATED
+CONNECTION='mysql://usuario_tienda:pass_tuya@IP_AMIGO:3306/db_taller/Servicio';
+
+
+-- 2. CREA EL ENLACE A LOS MECÁNICOS DE TU AMIGO
+-- Reemplaza 'usuario_tienda', 'pass_tuya' y 'IP_AMIGO' con los datos REALES
+CREATE TABLE mecanicos_taller_remoto (
+    idMecanico INT NOT NULL,
+    nombre VARCHAR(150) NOT NULL
+)
+ENGINE=FEDERATED
+CONNECTION='mysql://usuario_tienda:pass_tuya@IP_AMIGO:3306/db_taller/Mecanico';

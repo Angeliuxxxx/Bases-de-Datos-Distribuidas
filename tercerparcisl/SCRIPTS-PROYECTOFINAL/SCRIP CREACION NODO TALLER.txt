@@ -1,0 +1,28 @@
+-- =============================================
+-- NODO 2: db_taller (COMPUTADORA DE TU AMIGO)
+-- =============================================
+CREATE DATABASE IF NOT EXISTS db_taller DEFAULT CHARACTER SET utf8mb4;
+USE db_taller;
+
+CREATE TABLE Mecanico (
+  idMecanico INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(150) NOT NULL,
+  especialidad VARCHAR(100)
+);
+
+CREATE TABLE Servicio (
+  idServicio INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(100) NOT NULL,
+  descripcion TEXT,
+  costoManoDeObra DECIMAL(10, 2) NOT NULL
+);
+
+-- Inserta datos de ejemplo
+INSERT INTO Mecanico (nombre, especialidad) VALUES
+('Raúl Gómez', 'Suspensiones y Frenos'),
+('Ana Torres', 'Transmisiones');
+
+INSERT INTO Servicio (nombre, costoManoDeObra) VALUES
+('Afinación Completa (Mano de Obra)', 450.00),
+('Ajuste de Frenos (Mano de Obra)', 150.00),
+('Servicio a Suspensión Delantera', 600.00);

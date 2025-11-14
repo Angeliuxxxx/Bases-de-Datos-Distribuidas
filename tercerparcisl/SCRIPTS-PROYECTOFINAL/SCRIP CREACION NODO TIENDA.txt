@@ -1,0 +1,58 @@
+-- =============================================
+-- NODO 1: db_tienda (TU COMPUTADORA)
+-- =============================================
+CREATE DATABASE IF NOT EXISTS db_tienda DEFAULT CHARACTER SET utf8mb4;
+USE db_tienda;
+
+CREATE TABLE Cliente (
+  idCliente INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(150) NOT NULL,
+  telefono VARCHAR(15),
+  email VARCHAR(100)
+);
+
+CREATE TABLE Producto (
+  idProducto INT PRIMARY KEY AUTO_INCREMENT,
+  sku VARCHAR(50) UNIQUE NOT NULL,
+  nombre VARCHAR(150) NOT NULL,
+  descripcion TEXT,
+  precioVenta DECIMAL(10, 2) NOT NULL,
+  stock INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE Ticket (
+  idTicket INT PRIMARY KEY AUTO_INCREMENT,
+  idCliente INT,
+  fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  totalProductos DECIMAL(10, 2) DEFAULT 0,
+  totalServicios DECIMAL(10, 2) DEFAULT 0,
+  totalFinal DECIMAL(10, 2) DEFAULT 0,
+  FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente)
+);
+
+CREATE TABLE TicketDetalleProducto (
+  idDetalle INT PRIMARY KEY AUTO_INCREMENT,
+  idTicket INT NOT NULL,
+  idProducto INT NOT NULL,
+  cantidad INT NOT NULL,
+  precioUnitario DECIMAL(10, 2) NOT NULL,
+  FOREIGN KEY (idTicket) REFERENCES Ticket(idTicket),
+  FOREIGN KEY (idProducto) REFERENCES Producto(idProducto)
+);
+
+CREATE TABLE TicketDetalleServicio (
+  idDetalle INT PRIMARY KEY AUTO_INCREMENT,
+  idTicket INT NOT NULL,
+  idServicioRemoto INT NOT NULL,  -- ID de la tabla Servicio en db_taller
+  idMecanicoRemoto INT NOT NULL,  -- ID de la tabla Mecanico en db_taller
+  nombreServicio VARCHAR(100),     -- Se copia aquí para histórico
+  costoManoDeObra DECIMAL(10, 2), -- Se copia aquí para histórico
+  FOREIGN KEY (idTicket) REFERENCES Ticket(idTicket)
+);
+
+-- Inserta datos de ejemplo
+INSERT INTO Cliente (nombre, telefono) VALUES ('Cliente General', '99999999');
+INSERT INTO Producto (sku, nombre, precioVenta, stock) VALUES
+('BIC-M-R29', 'Bicicleta de Montaña Rodada 29', 8500.00, 10),
+('CAS-NEG-M', 'Casco Negro Mediano', 750.00, 30),
+('LLN-R29-X', 'Llanta R29 Todo Terreno', 450.00, 50);
